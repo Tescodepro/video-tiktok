@@ -19,7 +19,21 @@ class VideoController extends Controller
 {
     public function index()
     {
-        $videos = Video::with('user', 'likes', 'comments')->latest()->paginate(10);
+        if (auth()->check() && auth()->user()->age) {
+            $userAge = auth()->user()->age;
+            $videos = Video::whereNotNull('age_range')
+            ->where(function ($query) use ($userAge) {
+                $query->where('age_range', '<=', $userAge);
+            })
+            ->with('user', 'likes', 'comments')
+            ->latest()
+            ->paginate(10);
+        } else {
+            $videos = Video::whereNotNull('age_range')
+            ->with('user', 'likes', 'comments')
+            ->latest()
+            ->paginate(10);
+        }
         return view('videos.index', compact('videos'));
     }
 

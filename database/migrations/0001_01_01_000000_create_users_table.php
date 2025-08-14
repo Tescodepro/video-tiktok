@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('age')->nullable();
-            $table->rememberToken();
+            $table->rememberToken(); // For "Remember Me" functionality
             $table->timestamps();
         });
 

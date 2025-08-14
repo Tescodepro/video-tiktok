@@ -4,43 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Video - TikTok Clone</title>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(180deg, #000, #111);
             color: white;
-        }
-        .upload-container {
-            min-height: calc(100vh - 64px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding-top: 80px; /* Navbar offset */
         }
         .upload-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 24px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-        .form-input {
+        .form-control, .form-select {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            border-radius: 8px;
-            padding: 10px;
-            width: 100%;
         }
-        .form-input:focus {
-            outline: none;
+        .form-control:focus, .form-select:focus {
             border-color: #fe2c55;
-            box-shadow: 0 0 0 3px rgba(254, 44, 85, 0.2);
+            box-shadow: 0 0 0 0.25rem rgba(254, 44, 85, 0.25);
         }
         .upload-button {
             background: #fe2c55;
@@ -49,6 +41,7 @@
             border-radius: 50px;
             padding: 12px 24px;
             transition: background 0.3s ease;
+            border: none;
         }
         .upload-button:hover {
             background: #ff4d7d;
@@ -59,93 +52,90 @@
             border-radius: 10px;
             margin-bottom: 16px;
         }
-        .nav-bar {
-            background: rgba(0, 0, 0, 0.9);
-            height: 64px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10;
-        }
         .error-message {
             color: #ff4d7d;
             font-size: 0.875rem;
-            margin-top: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="nav-bar">
-        @include('layouts.navigation')
-    </div>
-    <div class="upload-container">
-        <div class="upload-card mt-16">
-            <h1 class="text-2xl font-bold text-center mb-2 mt-5">📤 Upload a New Video</h1>
-            <p class="text-center text-gray-300 mb-6">Share your creativity with the world!</p>
+    <!-- Navbar -->
+    @include('layouts.navigation')
+
+    <!-- Upload Form Container -->
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="upload-card w-100" style="max-width: 600px;">
+            <h1 class="text-center fw-bold mb-2 mt-3">📤 Upload a New Video</h1>
+            <p class="text-center text-light mb-4">Share your creativity with the world!</p>
+
             <form action="{{ route('videos.store') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
                 @csrf
+
                 <!-- Video File Input -->
-                <div class="mb-6">
-                    <label for="video" class="block text-sm font-semibold mb-2">Video File <span class="text-red-500">*</span></label>
-                    <input type="file" name="video" id="video" accept="video/*" required class="form-input">
+                <div class="mb-3">
+                    <label for="video" class="form-label fw-semibold">Video File <span class="text-danger">*</span></label>
+                    <input type="file" name="video" id="video" accept="video/*" required class="form-control">
                     @error('video')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
-                    <video id="videoPreview" class="video-preview hidden w-full mt-4" controls></video>
+                    <video id="videoPreview" class="video-preview d-none w-100 mt-3" controls></video>
                 </div>
 
-                <!-- Title Input -->
-                <div class="mb-6">
-                    <label for="title" class="block text-sm font-semibold mb-2">Title <span class="text-red-500">*</span></label>
-                    <input type="text" name="title" id="title" value="{{ old('title') }}" required class="form-input">
+                <!-- Title -->
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" id="title" value="{{ old('title') }}" required class="form-control">
                     @error('title')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Description Input -->
-                <div class="mb-6">
-                    <label for="description" class="block text-sm font-semibold mb-2">Description</label>
-                    <textarea name="description" id="description" rows="4" class="form-input" placeholder="Say something about your video...">{{ old('description') }}</textarea>
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-semibold">Description</label>
+                    <textarea name="description" id="description" rows="4" class="form-control" placeholder="Say something about your video...">{{ old('description') }}</textarea>
                     @error('description')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Producer Input -->
-                <div class="mb-6">
-                    <label for="producer" class="block text-sm font-semibold mb-2">Producer</label>
-                    <input type="text" name="producer" id="producer" value="{{ old('producer') }}" class="form-input">
+                <!-- Producer -->
+                <div class="mb-3">
+                    <label for="producer" class="form-label fw-semibold">Producer</label>
+                    <input type="text" name="producer" id="producer" value="{{ old('producer') }}" class="form-control">
                     @error('producer')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Genre Input -->
-                <div class="mb-6">
-                    <label for="genre" class="block text-sm font-semibold mb-2">Genre</label>
-                    <input type="text" name="genre" id="genre" value="{{ old('genre') }}" class="form-input">
+                <!-- Genre -->
+                <div class="mb-3">
+                    <label for="genre" class="form-label fw-semibold">Genre</label>
+                    <input type="text" name="genre" id="genre" value="{{ old('genre') }}" class="form-control">
                     @error('genre')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Age Range Input -->
-                <div class="mb-6">
-                    <label for="age_range" class="block text-sm font-semibold mb-2">Age Range</label>
-                    <input type="text" name="age_range" id="age_range" value="{{ old('age_range') }}" class="form-input">
+                <!-- Age Range -->
+                <div class="mb-3">
+                    <label for="age_range" class="form-label fw-semibold">Age Range</label>
+                    <input type="text" name="age_range" id="age_range" value="{{ old('age_range') }}" class="form-control">
                     @error('age_range')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <!-- Submit -->
-                <div class="text-center">
+                <div class="text-center mt-4">
                     <button type="submit" class="upload-button">🚀 Upload</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // Video preview functionality
@@ -155,9 +145,9 @@
             if (file) {
                 const url = URL.createObjectURL(file);
                 preview.src = url;
-                preview.classList.remove('hidden');
+                preview.classList.remove('d-none');
             } else {
-                preview.classList.add('hidden');
+                preview.classList.add('d-none');
                 preview.src = '';
             }
         });
