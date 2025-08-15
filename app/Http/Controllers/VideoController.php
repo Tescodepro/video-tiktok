@@ -243,6 +243,6 @@ class VideoController extends Controller
             'thumbnail_path' => null,
         ]);
 
-        return redirect()->route('videos.index')->with('success', 'Video uploaded successfully!');
+        return redirect()->route('home')->with('success', 'Video uploaded successfully!');
     }
 }
